@@ -20,7 +20,7 @@ def add(x, y):
         Sum of x + y
     """
     ### BEGIN YOUR CODE
-    pass
+    return x + y
     ### END YOUR CODE
 
 
@@ -48,7 +48,22 @@ def parse_mnist(image_filename, label_filename):
                 for MNIST will contain the values 0-9.
     """
     ### BEGIN YOUR CODE
-    pass
+    with gzip.open(image_filename, 'rb') as img_file:
+      img_data = img_file.read()
+    num_images = struct.unpack('>i', img_data[4:8])[0]
+    rows = struct.unpack('>i', img_data[8:12])[0]
+    cols = struct.unpack('>i', img_data[12:16])[0]
+    pixels = struct.unpack('B' * rows * cols * num_images, img_data[16:])
+    img = np.array(pixels, dtype=np.float32).reshape(num_images, rows*cols)
+    img /= 255.0
+    
+    with gzip.open(label_filename, 'rb') as label_file:
+      label_data = label_file.read()
+    num_labels = struct.unpack('>i', label_data[4:8])[0]  
+    labels = struct.unpack('B' * num_labels, label_data[8:])  
+    labels = np.array(labels, dtype=np.uint8)  
+
+    return (img, labels)
     ### END YOUR CODE
 
 
